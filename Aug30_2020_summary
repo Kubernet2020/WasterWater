@@ -12,6 +12,9 @@
               
   2.存在的问题：
               要给训练数据的date index转换成period训练，才可以用predict来预测不在训练集的时间。
+              https://stackoverflow.com/questions/58510659/error-valuewarning-a-date-index-has-been-provided-but-it-has-no-associated-fr
+              如果不改index模型会有warning 并且predict结束时间不能有训练集之外的。
+              print（predict)的结果发现如果把predict开始结束 时间间隔改大，数据会自动向前扩充。
               forecast（）是可以直接使用没问题，但是model.forecast(steps=天数)没有日期只有数据。
               不是很理解。感觉有坑。
               
