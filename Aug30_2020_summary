@@ -1,0 +1,37 @@
+1.ARIMA模型
+  1.确定的问题和结果：数据是stionary的 （通过ADF根检验）也就是说没有周期性，平稳，没有趋势。
+              acf图 sin波动
+              pacf图 快速结尾
+              判断最优用AR模型 且p为1 因为pacf图sharp下降。
+              p取1，10（10的时候pacf落入置信区间）
+              误差都在0.15左右 Total Solids的值在1000左右，就是说平均误差在150～100左右。
+              各种参数模型的效果都差不多是这个效果，模型的残差residual符合正太分布，acf图和pacf图都在1戒断，
+              就是说相邻误差没有关联。
+              
+              
+  2.存在的问题：
+              要给训练数据的date index转换成period训练，才可以用predict来预测不在训练集的时间。
+              forecast（）是可以直接使用没问题，但是model.forecast(steps=天数)没有日期只有数据。
+              不是很理解。感觉有坑。
+              
+              我目前的理解如果说没有周期性，ar为1相当于预测只和前一天有关系，而且没有移动周期。
+              
+              还可以加上季节性，但是从ADF检验估计没有季节性，即使图像看着很像。
+              
+  3.我看过比较有用的资料
+  
+              https://otexts.com/fppcn/stationarity.html
+              平稳的概念 d Total Solids平稳
+              
+              https://people.duke.edu/~rnau/411arim3.htm
+              https://otexts.com/fppcn/non-seasonal-arima.html
+              https://blog.csdn.net/Jasminexjf/article/details/94993362
+              如何看acf图pacf图判断 pq
+              
+              https://www.kaggle.com/sumi25/understand-arima-and-tune-p-d-q
+              https://www.cnblogs.com/tianqizhi/p/9277376.html
+              代码和整体思路
+              
+              
+              
+              
