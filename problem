@@ -1,0 +1,4 @@
+1.时间stationary的理解
+2.acp,pacf 找到合适的预测周期
+3.预处理后，模型好坏的判断，mae是否有意义。
+4.parameter：https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/
