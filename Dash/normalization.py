@@ -102,52 +102,52 @@ print(X.columns)
 
 #-----------Models--------------
 
-# targetList = ["Total Solids",	"SS", 	"BOD5",	"NH3",	"Org-N",	"P-TOT",	"SO4",	"TKN",	"PRCP_NOOA"]
-# for name in targetList:
-#     targetDF = series_normalized[name].to_frame()
-#     #print(X_test)
-#     size = int(len(X) * 0.8) #split the data into training set (80%) and validation set
-#     train = X[0:size]
-#     train_target = targetDF[0:size]
-#     test = X[size:len(X)]
-#     test_target = targetDF[size:len(X)]
-#
-#     X_train = train.values.reshape(-1, lag, num_features).astype('float32')
-#     y_train = train_target.values.astype('float32')
-#
-#     X_test = test.values.reshape(-1, lag, num_features).astype('float32')
-#     y_test = test_target.values.astype('float32')
-#     print(X_test)
-#     hidden = 64
-#     batch_size = 20
-#     epochs = 17
-#
-#     #we'll import the Sequential model type from Keras.
-#     #This is simply a linear stack of neural network layers, and it's perfect for the type of feed-forward CNN and RNN
-#     model1 = Sequential()
-#     model1.add(Bidirectional(LSTM(hidden), input_shape=(lag, num_features)))
-#     model1.add(Dense(1))
-#
-#     model1.compile(optimizer='adam',
-#                 loss='mae',
-#                 metrics=['mae'])
-#
-#
-#     history = model1.fit(X_train, y_train,
-#                         epochs=epochs,
-#                         batch_size=batch_size,
-#                         validation_data=(X_test,y_test))
-#     model1.save('my_models/myIWS_RNNmodel' + str(name))
-#     y_predict = model1.predict(X_test)
-#     plt.style.use("ggplot")
-#
-#     plt.figure(figsize=(10, 6))
-#     plt.plot(y_test, color='black', linewidth=.2, marker='o', markersize=2,
-#                 markeredgecolor='black', markeredgewidth=0.2, fillstyle='none')
-#     plt.plot(y_predict, color='blue', linewidth=4, linestyle=' ', marker='x', markersize=4,
-#                 markeredgecolor='blue', markeredgewidth=.2, fillstyle='none')
-#     plt.legend(('Test Data', 'Predictions'))
-#     #plt.savefig(name+".png", dpi = 600)
-#     plt.ylabel(name)
-#
-#     plt.show()
+targetList = ["Total Solids",	"SS", 	"BOD5",	"NH3",	"Org-N",	"P-TOT",	"SO4",	"TKN",	"PRCP_NOOA"]
+for name in targetList:
+    targetDF = series_normalized[name].to_frame()
+    #print(X_test)
+    size = int(len(X) * 0.8) #split the data into training set (80%) and validation set
+    train = X[0:size]
+    train_target = targetDF[0:size]
+    test = X[size:len(X)]
+    test_target = targetDF[size:len(X)]
+
+    X_train = train.values.reshape(-1, lag, num_features).astype('float32')
+    y_train = train_target.values.astype('float32')
+
+    X_test = test.values.reshape(-1, lag, num_features).astype('float32')
+    y_test = test_target.values.astype('float32')
+    print(X_test)
+    hidden = 64
+    batch_size = 20
+    epochs = 17
+
+    #we'll import the Sequential model type from Keras.
+    #This is simply a linear stack of neural network layers, and it's perfect for the type of feed-forward CNN and RNN
+    model1 = Sequential()
+    model1.add(Bidirectional(LSTM(hidden), input_shape=(lag, num_features)))
+    model1.add(Dense(1))
+
+    model1.compile(optimizer='adam',
+                loss='mae',
+                metrics=['mae'])
+
+
+    history = model1.fit(X_train, y_train,
+                        epochs=epochs,
+                        batch_size=batch_size,
+                        validation_data=(X_test,y_test))
+    model1.save('my_models/myIWS_RNNmodel' + str(name))
+    y_predict = model1.predict(X_test)
+    plt.style.use("ggplot")
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(y_test, color='black', linewidth=.2, marker='o', markersize=2,
+                markeredgecolor='black', markeredgewidth=0.2, fillstyle='none')
+    plt.plot(y_predict, color='blue', linewidth=4, linestyle=' ', marker='x', markersize=4,
+                markeredgecolor='blue', markeredgewidth=.2, fillstyle='none')
+    plt.legend(('Test Data', 'Predictions'))
+    #plt.savefig(name+".png", dpi = 600)
+    plt.ylabel(name)
+
+    plt.show()
