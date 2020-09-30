@@ -231,7 +231,7 @@ app.layout  =  html.Div(children = [
                 min_date_allowed = dt.strptime(df['Date'][0],'%Y-%m-%d'),
                 max_date_allowed = dt.strptime(df.iloc[len(df) - 1, 0],'%Y-%m-%d'),
                 initial_visible_month = dt.strptime('2018-12-28','%Y-%m-%d'),
-                date = df.iloc[0, 0]
+                date = df.iloc[365 * 3 + 100, 0]
             ),
 
             html.Label('End Date:'),
@@ -241,7 +241,7 @@ app.layout  =  html.Div(children = [
                 max_date_allowed = dt.strptime(df.iloc[len(df) - 1, 0],'%Y-%m-%d'),
                 #initial_visible_month = dt.strptime(df.iloc[len(df) - 1, 0],'%Y-%m-%d'),
                 initial_visible_month = dt.strptime('2019-01-01','%Y-%m-%d'),
-                date = df.iloc[10, 0]
+                date = df.iloc[365 * 3 + 130, 0]
             ),
 
             # dcc.Dropdown(
@@ -253,14 +253,13 @@ app.layout  =  html.Div(children = [
             #      value = 'MTL'
             #      ),
 
-
-            html.Label('Show predicted value in __ days'),
-            dcc.Input(value = '5', type = 'text'),
+            html.Label('Show predicted value in __ days', style = {'margin-top':'15px'}),
+            dcc.Input(id = 'daysOfPrediction', value = '5', type = 'text'),
 
             html.Label('Show real value'),
-            dcc.Input(value = 'a value', type = 'text'),
+            dcc.Input(value = 'Yes', type = 'text'),
 
-            html.Label('Form of report:'),
+            html.Label('Form of report:', style = {'margin-top':'15px'}),
             dcc.Dropdown(
                 id = 'reportTypeDropdown',
                 options = [
@@ -282,25 +281,50 @@ app.layout  =  html.Div(children = [
 
     ], style = {'float': 'left', 'display': 'inline-block', 'width': '45%'}),
 
-    html.Div(children = [
-        # html.H6('Results:', style = {'font-weight':'bold'}),
-        #generate_table(df),
-        # dcc.Graph(
-        #     id = 'graph',
-        #     figure = fig
-        # )
-    ],
-    id = 'reportDiv',
-    style = {'float': 'left', 'display': 'inline-block', 'width': '55%'}),
+    dcc.Loading(
+        id="loading",
+        children = [
+            html.Div(children = [
+                # html.H6('Results:', style = {'font-weight':'bold'}),
+                #generate_table(df),
+                # dcc.Graph(
+                #     id = 'graph',
+                #     figure = fig
+                # )
+            ],
+            id = 'reportDiv',
+            style = {'float': 'left', 'display': 'inline-block', 'width': '55%'}),
+        ],
+        type = "default",
+        style = {'filter':'alpha(opacity=50)', '-moz-opacity':'0.5', 'opacity': '0.5',},
+        fullscreen = True,
+    ),
 
-    # dcc.Loading(
-    #     id="loading",
-    #     children=[html.Div(dcc.Graph(id='graph'))],
-    #     type="circle",
-    #     fullscreen=True
-    # ),
+    dcc.ConfirmDialog(
+        id='confirm',
+        message='Please check conditions and try again.',
+    ),
 
-], style = {'margin':'0px', 'display':'flex', 'justify-content':'center', 'align-items':'center'})
+], style = {'margin':'0px 20px 0px 20px'}) #'display':'flex', 'justify-content':'center', 'align-items':'center'
+
+@app.callback(
+    dash.dependencies.Output('confirm', 'displayed'),
+    [dash.dependencies.Input('datePickerStart', 'date'),
+    dash.dependencies.Input('datePickerEnd', 'date')])
+def display_confirm(startDate, endDate):
+    if startDate >= endDate:
+        return True
+    return False
+
+@app.callback(
+    dash.dependencies.Output('daysOfPrediction', 'value'),
+    [dash.dependencies.Input('datePickerStart', 'date'),
+    dash.dependencies.Input('datePickerEnd', 'date')])
+def calculateDays(startDate, endDate):
+    print(startDate);
+    startTime= datetime.strptime(startDate,"%Y-%m-%d")
+    endTime= datetime.strptime(endDate,"%Y-%m-%d")
+    return (endTime- startTime).days
 
 @app.callback(
     dash.dependencies.Output('reportDiv', 'children'),
@@ -323,25 +347,31 @@ def recalculate(checkListValues, startDate, endDate, reportType):
         result = pd.DataFrame.from_dict(predictWithParams(output_targets = checkListBak,
                               start_date = startDateBak,
                               end_date = endDateBak)['PredictionFrame'])
-        # print(result)
+        print(result)
         #result = df[(df['Date'] >= startDateBak) & ((df['Date'] <= endDateBak))]
 
-    if reportType == 'LC':
-        result = result.melt(id_vars = 'Date', value_vars = result.iloc[:,1:])
-        return dcc.Graph(
-            id = 'graph',
-            figure = px.line(result, x = "Date", y = result.columns.tolist(), color = 'variable')
-        )
+        if reportType == 'LC':
+            result = result.melt(id_vars = 'Date', value_vars = result.iloc[:,1:])
+            return dcc.Graph(
+                id = 'graph',
+                figure = px.line(result, x = "Date", y = result.columns.tolist(), color = 'variable')
+            )
 
-    if reportType == 'BC':
-        result = result.melt(id_vars = 'Date', value_vars = result.iloc[:,1:])
-        return dcc.Graph(
-            id = 'graph',
-            figure = px.bar(result, x = "Date", y = result.columns.tolist(), color = 'variable')
-        )
+        if reportType == 'BC':
+            result = result.melt(id_vars = 'Date', value_vars = result.iloc[:,1:])
+            return dcc.Graph(
+                id = 'graph',
+                figure = px.bar(result, x = "Date", y = result.columns.tolist(), color = 'variable')
+            )
 
-    if reportType == 'TB':
-        return generate_table(result)
+        if reportType == 'TB':
+            temp=list(result['Date'])
+            for i in temp:
+    	        result['Date'] = i.strftime("%Y-%m-%d")
+            return generate_table(result)
+
+    else:
+        return
 
 if __name__  ==  '__main__':
     app.run_server(debug = True)
