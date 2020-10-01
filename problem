@@ -2,3 +2,12 @@
 2.acp,pacf 找到合适的预测周期
 3.预处理后，模型好坏的判断，mae是否有意义。
 4.parameter：https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/
+
+
+Done:
+1. MAX MIN all 17 100           0.03 0.28
+2s 9ms/step - loss: 0.0443 - mae: 0.0443 - val_loss: 0.0310 - val_mae: 0.0310
+
+2. std all 100     
+2s 8ms/step - loss: 0.4441 - mae: 0.4441 - val_loss: 0.4496 - val_mae: 0.4496
+2s 7ms/step - loss: 0.1303 - mae: 0.1303 - val_loss: 0.6147 - val_mae: 0.6147
